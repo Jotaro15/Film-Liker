@@ -21,11 +21,11 @@ class MyApp extends StatelessWidget {
 
 class MovieList extends StatefulWidget {
   @override
-  _MovieListState createState() => _MovieListState(); // Pour gérer l'état de MovieList
+  _MovieListState createState() => _MovieListState();
 }
 
 class _MovieListState extends State<MovieList> {
-  List<Movie> _movies = []; // Liste pour stocker les films récupérés
+  List<Movie> _movies = [];
 
   @override
   void initState() {

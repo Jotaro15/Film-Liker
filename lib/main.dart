@@ -15,17 +15,17 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         scaffoldBackgroundColor: Colors.grey[900],
       ),
-      home: MovieList(),
+      home: ListeFilms(),
     );
   }
 }
 
-class MovieList extends StatefulWidget {
+class ListeFilms extends StatefulWidget {
   @override
-  _MovieListState createState() => _MovieListState();
+  _etatlistefilms createState() => _etatlistefilms(); // Pour gerer etat MovieList
 }
 
-class _MovieListState extends State<MovieList> {
+class _etatlistefilms extends State<ListeFilms> { // Liste pour stocker les films recuperes
   List<Movie> _movies = [];
 
   @override
@@ -34,17 +34,17 @@ class _MovieListState extends State<MovieList> {
     fetchMovies();
   }
 
-  void fetchMovies() async {
+  void fetchMovies() async { // RecupereFilms pour récupérer les films depuis l'API
     final response = await http.get(Uri.parse(
         'https://api.themoviedb.org/3/movie/now_playing?api_key=d05dd3724e636dc8ca314664f17e1227'));
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200) { // Vérifie si requête → OK
       final parsed = json.decode(response.body);
       setState(() {
         _movies = List<Movie>.from(
-            parsed['results'].map((json) => Movie.fromJson(json)));
+            parsed['results'].map((json) => Movie.fromJson(json))); // si pas d'erreur affiche les films
       });
     } else {
-      throw Exception('Failed to load movies');
+      throw Exception("OUPS ! Il semblerait qu'il y ait une erreur..."); //si erreur affiche un mess erreur
     }
   }
 
@@ -54,8 +54,8 @@ class _MovieListState extends State<MovieList> {
       appBar: AppBar(
         title: Text('Mes Films'),
       ),
-      body: GridView.builder(
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+      body: GridView.builder( //liste avec colonnes
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount( // Définit les colonnes
           crossAxisCount: 2,
           childAspectRatio: 0.7,
         ),
@@ -67,16 +67,16 @@ class _MovieListState extends State<MovieList> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Expanded(
+                Expanded(// Image du film
                   child: Image.network(
-                    'https://image.tmdb.org/t/p/w500/${movie.posterPath}',
-                    fit: BoxFit.cover,
+                    'https://image.tmdb.org/t/p/w500/${movie.posterPath}',// URL de l'image du film.
+                    fit: BoxFit.cover,// Ajuste l'image pour couvrir tte la zone
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(8.0),// Définit espacement de tt les côtés
                   child: Text(
-                    movie.title,
+                    movie.title,// Titre du film à afficher
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
