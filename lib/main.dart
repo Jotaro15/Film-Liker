@@ -28,6 +28,8 @@ class ListeFilms extends StatefulWidget {
 class _EtatListeFilms extends State<ListeFilms> {
   // Liste pour stocker les films récupérés
   List<Movie> _movies = [];
+  bool _isFullScreen = false;
+  Movie? _selectedMovie;
 
   @override
   void initState() {
@@ -58,11 +60,24 @@ class _EtatListeFilms extends State<ListeFilms> {
       duration: Duration(seconds: 2), // Durée de la notification
     ));
   }
+
   void _showSnackBarSupprFilm() {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text('Film retiré de votre liste !'),
       duration: Duration(seconds: 2), // Durée de la notification
     ));
+  }
+
+  void _toggleFullScreen(Movie movie) {
+    setState(() {
+      if (_isFullScreen) {
+        _isFullScreen = false;
+        _selectedMovie = null;
+      } else {
+        _isFullScreen = true;
+        _selectedMovie = movie;
+      }
+    });
   }
 
   @override
@@ -90,43 +105,63 @@ class _EtatListeFilms extends State<ListeFilms> {
           ],
         ),
       ),
-      body: GridView.builder(
-        // Liste avec colonnes
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          // Définit les colonnes
-          crossAxisCount: 2,
-          childAspectRatio: 0.7,
-        ),
-        itemCount: _movies.length,
-        itemBuilder: (context, index) {
-          final movie = _movies[index];
-          return Card(
-            color: Colors.grey[800],
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Expanded(
-                  // Image du film
-                  child: Image.network(
-                    'https://image.tmdb.org/t/p/w500/${movie.posterPath}',
-                    // URL de l'image du film.
-                    fit: BoxFit.cover,
-                    // Ajuste l'image pour couvrir toute la zone
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  // Définit l'espacement de tous les côtés
-                  child: Text(
-                    movie.title,
-                    // Titre du film à afficher
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ],
+      body: Stack(
+        children: [
+          GridView.builder(
+            // Liste avec colonnes
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              // Définit les colonnes
+              crossAxisCount: 2,
+              childAspectRatio: 0.7,
             ),
-          );
-        },
+            itemCount: _movies.length,
+            itemBuilder: (context, index) {
+              final movie = _movies[index];
+              return GestureDetector(
+                onTap: () => _toggleFullScreen(movie),
+                child: Card(
+                  color: Colors.grey[800],
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Expanded(
+                        // Image du film
+                        child: Image.network(
+                          'https://image.tmdb.org/t/p/w500/${movie.posterPath}',
+                          // URL de l'image du film.
+                          fit: BoxFit.cover,
+                          // Ajuste l'image pour couvrir toute la zone
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        // Définit l'espacement de tous les côtés
+                        child: Text(
+                          movie.title,
+                          // Titre du film à afficher
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+          if (_isFullScreen && _selectedMovie != null)
+            GestureDetector(
+              onTap: () => _toggleFullScreen(_selectedMovie!),
+              child: Container(
+                color: Colors.black.withOpacity(0.8),
+                child: Center(
+                  child: Image.network(
+                    'https://image.tmdb.org/t/p/w500/${_selectedMovie!.posterPath}',
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
