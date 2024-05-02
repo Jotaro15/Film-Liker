@@ -22,10 +22,11 @@ class MyApp extends StatelessWidget {
 
 class ListeFilms extends StatefulWidget {
   @override
-  _etatlistefilms createState() => _etatlistefilms(); // Pour gerer etat MovieList
+  _EtatListeFilms createState() => _EtatListeFilms(); // Pour gérer l'état de la liste de films
 }
 
-class _etatlistefilms extends State<ListeFilms> { // Liste pour stocker les films recuperes
+class _EtatListeFilms extends State<ListeFilms> {
+  // Liste pour stocker les films récupérés
   List<Movie> _movies = [];
 
   @override
@@ -34,28 +35,65 @@ class _etatlistefilms extends State<ListeFilms> { // Liste pour stocker les film
     fetchMovies();
   }
 
-  void fetchMovies() async { // RecupereFilms pour récupérer les films depuis l'API
+  void fetchMovies() async {
+    // Fonction pour récupérer les films depuis l'API
     final response = await http.get(Uri.parse(
         'https://api.themoviedb.org/3/movie/now_playing?api_key=d05dd3724e636dc8ca314664f17e1227'));
-    if (response.statusCode == 200) { // Vérifie si requête → OK
+    if (response.statusCode == 200) {
+      // Vérifie si la requête est OK
       final parsed = json.decode(response.body);
       setState(() {
-        _movies = List<Movie>.from(
-            parsed['results'].map((json) => Movie.fromJson(json))); // si pas d'erreur affiche les films
+        _movies = List<Movie>.from(parsed['results']
+            .map((json) => Movie.fromJson(json))); // Affiche les films si pas d'erreur
       });
     } else {
-      throw Exception("OUPS ! Il semblerait qu'il y ait une erreur..."); //si erreur affiche un mess erreur
+      throw Exception(
+          "OUPS ! Il semblerait qu'il y ait une erreur..."); // Affiche un message d'erreur
     }
+  }
+
+  void _showSnackBarAjoutFilm() {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('Film ajouté à votre liste !'),
+      duration: Duration(seconds: 2), // Durée de la notification
+    ));
+  }
+  void _showSnackBarSupprFilm() {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('Film retiré de votre liste !'),
+      duration: Duration(seconds: 2), // Durée de la notification
+    ));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Mes Films'),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Films à la une :',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            IconButton(
+              icon: Icon(
+                Icons.favorite,
+                color: Colors.red,
+              ),
+              onPressed: () {
+                // Action pour gérer le bouton "favorite"
+              },
+            ),
+          ],
+        ),
       ),
-      body: GridView.builder( //liste avec colonnes
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount( // Définit les colonnes
+      body: GridView.builder(
+        // Liste avec colonnes
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          // Définit les colonnes
           crossAxisCount: 2,
           childAspectRatio: 0.7,
         ),
@@ -67,16 +105,21 @@ class _etatlistefilms extends State<ListeFilms> { // Liste pour stocker les film
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Expanded(// Image du film
+                Expanded(
+                  // Image du film
                   child: Image.network(
-                    'https://image.tmdb.org/t/p/w500/${movie.posterPath}',// URL de l'image du film.
-                    fit: BoxFit.cover,// Ajuste l'image pour couvrir tte la zone
+                    'https://image.tmdb.org/t/p/w500/${movie.posterPath}',
+                    // URL de l'image du film.
+                    fit: BoxFit.cover,
+                    // Ajuste l'image pour couvrir toute la zone
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(8.0),// Définit espacement de tt les côtés
+                  padding: const EdgeInsets.all(8.0),
+                  // Définit l'espacement de tous les côtés
                   child: Text(
-                    movie.title,// Titre du film à afficher
+                    movie.title,
+                    // Titre du film à afficher
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
