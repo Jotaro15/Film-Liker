@@ -1,6 +1,7 @@
 # untitled1
 
-A new Flutter project.
+Ce projet prend une API de films sortis récemment et permet de les afficher, et de les liker, et de les enregistrer dans une liste de films likés.
+C'est un projet Flutter. 
 
 ## Getting Started
 
