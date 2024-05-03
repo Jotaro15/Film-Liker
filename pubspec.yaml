@@ -1,5 +1,5 @@
-name: untitled1
-description: "A new Flutter project."
+name: untiled1
+description: "Une application permettant de voir les nouveaux films à l'affiche et de les selectionner pour créer une liste de favoris."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
